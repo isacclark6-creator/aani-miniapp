@@ -4,42 +4,56 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>آنی دک</title>
-<!-- SDK مینی‌اپ بله: طبق مستندات باید قبل از بقیه اسکریپت‌ها بیاید. بدون بله هم صفحه کار می‌کند. -->
 <script src="https://tapi.bale.ai/miniapp.js?3"></script>
 <style>
-  :root { --brand:#F7941D; --brand-dark:#d97c0a; --ink:#222; --muted:#6b6b6b; --card:#fff; }
+  :root { --brand:#F7941D; --brand-2:#ffb84d; --brand-dark:#c96f05; --ink:#222; --muted:#6b6b6b; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body { margin:0; padding:0; }
-  body {
-    font-family: Vazirmatn, Tahoma, "Segoe UI", system-ui, sans-serif;
-    color:var(--ink); background:#f3f3f3; min-height:100vh;
-    padding-bottom:76px;
-  }
-  /* پس‌زمینه واترمارک: عدد opacity را برای پررنگ/کم‌رنگ شدن عوض کن */
+  body { font-family:Vazirmatn,Tahoma,"Segoe UI",system-ui,sans-serif; color:var(--ink); background:#f3f3f3; min-height:100vh; }
   .wm { position:fixed; inset:0; z-index:-1; background:url(img/bg.jpg) center/cover no-repeat; opacity:.16; }
 
-  header {
-    position:sticky; top:0; z-index:5; padding:14px 16px 12px;
-    background:rgba(255,255,255,.92); backdrop-filter:blur(8px);
-    border-bottom:3px solid var(--brand); display:flex; align-items:center; gap:10px;
-  }
-  .logo { font-size:26px; font-weight:800; color:var(--brand); line-height:1; }
+  header { position:sticky; top:0; z-index:5; padding:12px 14px; background:rgba(255,255,255,.93); backdrop-filter:blur(8px);
+           border-bottom:3px solid var(--brand); display:flex; align-items:center; gap:10px; }
+  .logo { font-size:24px; font-weight:800; color:var(--brand); line-height:1.1; }
   .sub  { font-size:12px; color:var(--muted); }
+  #back { display:none; margin-inline-start:auto; border:0; border-radius:12px; padding:8px 14px; font:inherit; font-weight:700;
+          background:#fff; color:var(--brand-dark); box-shadow:0 2px 0 #e3d2bb, 0 3px 8px rgba(0,0,0,.1); cursor:pointer; }
+  body.sub-page #back { display:block; }
 
-  main { padding:14px; }
+  main { padding:14px; max-width:720px; margin:0 auto; }
   .view { display:none; animation:fade .25s ease; }
   .view.active { display:block; }
   @keyframes fade { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
-
   h2 { font-size:17px; margin:4px 0 12px; display:flex; align-items:center; gap:8px; }
   h2::before { content:""; width:5px; height:20px; border-radius:3px; background:var(--brand); }
 
+  /* ---------- صفحه خوش‌آمدگویی ---------- */
+  .hero { text-align:center; padding:18px 8px 6px; }
+  .hero .hello { font-size:15px; color:var(--muted); }
+  .hero .title { font-size:26px; font-weight:800; margin:4px 0 6px; }
+  .hero .title b { color:var(--brand); }
+  .hero .desc { font-size:13px; color:#555; line-height:2; }
+  .tiles { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:20px; }
+  .tile { border:0; padding:18px 8px 16px; border-radius:22px; font:inherit; cursor:pointer; color:var(--ink);
+          background:linear-gradient(180deg,#fff,#f6f1ea); display:flex; flex-direction:column; align-items:center; gap:12px;
+          box-shadow:0 5px 0 #dccdb8, 0 10px 18px rgba(0,0,0,.12), inset 0 1px 0 #fff;
+          transition:transform .12s, box-shadow .12s; }
+  .tile:active { transform:translateY(4px); box-shadow:0 1px 0 #dccdb8, 0 3px 8px rgba(0,0,0,.12), inset 0 1px 0 #fff; }
+  .tile .lbl { font-weight:800; font-size:15px; }
+
+  /* آیکون سه‌بعدی: کاشی نارنجی براق با ضخامت و سایه */
+  .ic3d { width:84px; height:84px; border-radius:24px; position:relative;
+          background:linear-gradient(145deg,#ffc56b 0%,#F7941D 55%,#e07f0a 100%);
+          box-shadow:0 7px 0 #b25e00, 0 14px 16px rgba(120,60,0,.35), inset 0 3px 3px rgba(255,255,255,.65), inset 0 -4px 6px rgba(150,70,0,.35);
+          display:flex; align-items:center; justify-content:center; }
+  .ic3d::after { content:""; position:absolute; left:10px; right:10px; top:6px; height:26px; border-radius:18px 18px 40px 40px;
+          background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0)); pointer-events:none; }
+  .ic3d svg { width:50px; height:50px; position:relative; z-index:1; filter:drop-shadow(0 3px 2px rgba(110,50,0,.45)); }
+
+  /* ---------- کارت‌های محصول ---------- */
   .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-  .card {
-    background:var(--card); border-radius:16px; overflow:hidden; cursor:pointer;
-    box-shadow:0 2px 10px rgba(0,0,0,.08); border:0; padding:0; text-align:right;
-    font:inherit; color:inherit; transition:transform .15s;
-  }
+  .card { background:#fff; border-radius:16px; overflow:hidden; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.08);
+          border:0; padding:0; text-align:right; font:inherit; color:inherit; transition:transform .15s; }
   .card:active { transform:scale(.97); }
   .card img { display:block; width:100%; aspect-ratio:16/10; object-fit:cover; background:#ddd; }
   .card .body { padding:10px 12px 14px; }
@@ -47,37 +61,31 @@
   .card .short { font-size:12px; color:var(--muted); margin-top:3px; }
   .card .bar { width:34px; height:3px; border-radius:2px; background:var(--brand); margin-top:9px; }
 
-  .panel { background:var(--card); border-radius:16px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,.08); line-height:2; }
+  .panel { background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,.08); line-height:2; }
   .panel img { width:100%; border-radius:12px; margin-bottom:12px; display:block; }
   .row { display:flex; gap:8px; padding:8px 0; border-bottom:1px solid #eee; }
   .row:last-child { border-bottom:0; }
 
-  /* صفحه جزئیات محصول */
+  /* کاتالوگ‌ها */
+  .cat { display:flex; align-items:center; gap:12px; width:100%; margin-bottom:12px; padding:14px; border:0; border-radius:16px; background:#fff;
+         font:inherit; text-align:right; cursor:pointer; color:inherit; box-shadow:0 3px 0 #e3d8c8, 0 6px 12px rgba(0,0,0,.08); }
+  .cat:active { transform:translateY(2px); box-shadow:0 1px 0 #e3d8c8; }
+  .cat .mini { width:46px; height:46px; border-radius:14px; flex:none; display:flex; align-items:center; justify-content:center; font-size:22px;
+               background:linear-gradient(145deg,#ffc56b,#F7941D); box-shadow:0 3px 0 #b25e00, inset 0 2px 2px rgba(255,255,255,.6); }
+  .cat .t { font-weight:700; font-size:14px; }
+  .cat .s { font-size:12px; color:var(--muted); }
+
+  /* جزئیات محصول */
   #detail { position:fixed; inset:0; z-index:20; background:#f3f3f3; overflow:auto; display:none; }
   #detail.open { display:block; animation:fade .25s ease; }
-  #detail .hero { width:100%; aspect-ratio:16/10; object-fit:cover; display:block; }
-  #detail .content { padding:16px; }
+  #detail .himg { width:100%; aspect-ratio:16/10; object-fit:cover; display:block; }
+  #detail .content { padding:16px; max-width:720px; margin:0 auto; }
   #detail h1 { font-size:20px; margin:0 0 8px; }
   #detail p { line-height:2; color:#333; white-space:pre-line; }
-  .btn {
-    display:block; width:100%; margin-top:14px; padding:13px; border:0; border-radius:14px;
-    font:inherit; font-weight:700; font-size:15px; cursor:pointer;
-    background:var(--brand); color:#fff;
-  }
-  .btn.ghost { background:#fff; color:var(--brand-dark); border:2px solid var(--brand); }
-
-  nav {
-    position:fixed; bottom:0; left:0; right:0; z-index:10; display:flex;
-    background:rgba(255,255,255,.96); backdrop-filter:blur(8px);
-    border-top:1px solid #e4e4e4; padding-bottom:env(safe-area-inset-bottom);
-  }
-  nav button {
-    flex:1; border:0; background:none; padding:10px 4px 9px; font:inherit; font-size:12px;
-    color:var(--muted); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px;
-  }
-  nav button .ic { font-size:20px; filter:grayscale(1); opacity:.6; }
-  nav button.active { color:var(--brand-dark); font-weight:700; }
-  nav button.active .ic { filter:none; opacity:1; }
+  .btn { display:block; width:100%; margin-top:14px; padding:13px; border:0; border-radius:14px; font:inherit; font-weight:700; font-size:15px;
+         cursor:pointer; background:var(--brand); color:#fff; box-shadow:0 4px 0 #b25e00; }
+  .btn:active { transform:translateY(3px); box-shadow:0 1px 0 #b25e00; }
+  .btn.ghost { background:#fff; color:var(--brand-dark); box-shadow:0 4px 0 #e3d2bb; border:2px solid var(--brand); }
 </style>
 </head>
 <body>
@@ -88,12 +96,47 @@
     <div class="logo">آنی دک</div>
     <div class="sub">عرش‌گستر دامون</div>
   </div>
+  <button id="back">🏠 صفحه اصلی</button>
 </header>
 
 <main>
-  <section id="products" class="view active">
+  <!-- خوش‌آمدگویی -->
+  <section id="home" class="view active">
+    <div class="hero">
+      <div class="hello">👋 سلام</div>
+      <div class="title">به سایت معرفی سقف <b>آنی دک</b> خوش آمدید</div>
+      <div class="desc">سیستم سقف تیرچه‌ای فولادی-بتنی. یکی از گزینه‌های زیر را انتخاب کنید.</div>
+    </div>
+    <div class="tiles">
+      <button class="tile" data-go="products">
+        <span class="ic3d"><svg viewBox="0 0 64 64" fill="none">
+          <path d="M32 8 8 20l24 12 24-12L32 8Z" fill="#fff"/><path d="M8 30l24 12 24-12" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><path d="M8 40l24 12 24-12" stroke="#fff" stroke-width="5" stroke-linejoin="round" opacity=".8"/></svg></span>
+        <span class="lbl">محصولات</span></button>
+      <button class="tile" data-go="catalogs">
+        <span class="ic3d"><svg viewBox="0 0 64 64" fill="none">
+          <path d="M12 10h30a4 4 0 0 1 4 4v38a4 4 0 0 1-4 4H12V10Z" fill="#fff"/><path d="M46 18h6v38h-6" fill="#fff" opacity=".6"/>
+          <path d="M20 22h18M20 30h18M20 38h12" stroke="#e07f0a" stroke-width="4" stroke-linecap="round"/></svg></span>
+        <span class="lbl">کاتالوگ‌ها</span></button>
+      <button class="tile" data-go="about">
+        <span class="ic3d"><svg viewBox="0 0 64 64" fill="none">
+          <path d="M14 56V14a3 3 0 0 1 3-3h20a3 3 0 0 1 3 3v42H14Z" fill="#fff"/><path d="M40 26h8a3 3 0 0 1 3 3v27H40V26Z" fill="#fff" opacity=".7"/>
+          <path d="M22 20h4M30 20h4M22 29h4M30 29h4M22 38h4M30 38h4" stroke="#e07f0a" stroke-width="4" stroke-linecap="round"/><path d="M10 56h44" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></span>
+        <span class="lbl">درباره ما</span></button>
+      <button class="tile" data-go="contact">
+        <span class="ic3d"><svg viewBox="0 0 64 64" fill="none">
+          <path d="M18 8h8l5 13-6 4c3 7 8 12 15 15l4-6 13 5v8a5 5 0 0 1-5 5C30 52 12 34 12 14a5 5 0 0 1 6-6Z" fill="#fff"/></svg></span>
+        <span class="lbl">تماس با ما</span></button>
+    </div>
+  </section>
+
+  <section id="products" class="view">
     <h2>محصولات</h2>
     <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="catalogs" class="view">
+    <h2>کاتالوگ‌ها</h2>
+    <div id="cats"></div>
   </section>
 
   <section id="about" class="view">
@@ -118,7 +161,7 @@
 </main>
 
 <div id="detail">
-  <img class="hero" id="d-img" alt="">
+  <img class="himg" id="d-img" alt="">
   <div class="content">
     <h1 id="d-name"></h1>
     <p id="d-text"></p>
@@ -127,69 +170,76 @@
   </div>
 </div>
 
-<nav>
-  <button data-tab="products" class="active"><span class="ic">🏗</span>محصولات</button>
-  <button data-tab="about"><span class="ic">🏢</span>درباره ما</button>
-  <button data-tab="contact"><span class="ic">☎️</span>تماس</button>
-</nav>
-
 <script>
-  // اتصال به بله (اگر داخل بله باز نشده باشد، بی‌صدا نادیده گرفته می‌شود)
   var tg = (window.Bale && window.Bale.WebApp) || null;
   try { if (tg && tg.ready) tg.ready(); } catch (e) {}
   try { if (tg && tg.expand) tg.expand(); } catch (e) {}
 
-  // محصولات آزمایشی؛ بعداً با محتوای واقعی عوض می‌شود
   var PRODUCTS = [
-    { name:"محصول نمونه ۱", short:"توضیح کوتاه آزمایشی", img:"img/p1.jpg", thumb:"img/p1_thumb.jpg",
-      text:"توضیح آزمایشی محصول ۱.\nمشخصات: ----" },
-    { name:"محصول نمونه ۲", short:"توضیح کوتاه آزمایشی", img:"img/p2.jpg", thumb:"img/p2_thumb.jpg",
-      text:"توضیح آزمایشی محصول ۲.\nمشخصات: ----" },
-    { name:"محصول نمونه ۳", short:"توضیح کوتاه آزمایشی", img:"img/p3.jpg", thumb:"img/p3_thumb.jpg",
-      text:"توضیح آزمایشی محصول ۳.\nمشخصات: ----" },
-    { name:"محصول نمونه ۴", short:"توضیح کوتاه آزمایشی", img:"img/p4.jpg", thumb:"img/p4_thumb.jpg",
-      text:"توضیح آزمایشی محصول ۴.\nمشخصات: ----" }
+    { name:"محصول نمونه ۱", short:"توضیح کوتاه آزمایشی", img:"img/p1.jpg", thumb:"img/p1_thumb.jpg", text:"توضیح آزمایشی محصول ۱.\nمشخصات: ----" },
+    { name:"محصول نمونه ۲", short:"توضیح کوتاه آزمایشی", img:"img/p2.jpg", thumb:"img/p2_thumb.jpg", text:"توضیح آزمایشی محصول ۲.\nمشخصات: ----" },
+    { name:"محصول نمونه ۳", short:"توضیح کوتاه آزمایشی", img:"img/p3.jpg", thumb:"img/p3_thumb.jpg", text:"توضیح آزمایشی محصول ۳.\nمشخصات: ----" },
+    { name:"محصول نمونه ۴", short:"توضیح کوتاه آزمایشی", img:"img/p4.jpg", thumb:"img/p4_thumb.jpg", text:"توضیح آزمایشی محصول ۴.\nمشخصات: ----" }
+  ];
+  var CATALOGS = [
+    { name:"معرفی شرکت عرش‌گستر دامون", file:"catalogs/company-profile.pdf" },
+    { name:"راهنمای فنی سقف آنی‌دک",    file:"catalogs/technical-guide.pdf" },
+    { name:"تأییدیه فنی",               file:"catalogs/technical-approval.pdf" }
   ];
 
   var $ = function (s) { return document.querySelector(s); };
 
-  // ساخت کارت‌ها (شبکه ۲ستونه)
   var grid = $("#grid");
   PRODUCTS.forEach(function (p, i) {
     var b = document.createElement("button");
     b.className = "card";
-    b.innerHTML = '<img loading="lazy" alt="" src="' + p.thumb + '">' +
-      '<div class="body"><div class="name"></div><div class="short"></div><div class="bar"></div></div>';
+    b.innerHTML = '<img loading="lazy" alt="" src="' + p.thumb + '"><div class="body"><div class="name"></div><div class="short"></div><div class="bar"></div></div>';
     b.querySelector(".name").textContent = p.name;
     b.querySelector(".short").textContent = p.short;
     b.addEventListener("click", function () { openDetail(i); });
     grid.appendChild(b);
   });
 
-  // صفحه جزئیات
-  function openDetail(i) {
-    var p = PRODUCTS[i];
-    $("#d-img").src = p.img;
-    $("#d-name").textContent = p.name;
-    $("#d-text").textContent = p.text;
-    $("#detail").classList.add("open");
-    $("#detail").scrollTop = 0;
-    history.pushState({ d: 1 }, "");
-  }
-  function closeDetail() { $("#detail").classList.remove("open"); }
-  $("#d-back").addEventListener("click", function () { history.back(); });
-  $("#d-contact").addEventListener("click", function () { closeDetail(); showTab("contact"); });
-  window.addEventListener("popstate", closeDetail);   // دکمه برگشت گوشی
+  var cats = $("#cats");
+  CATALOGS.forEach(function (c) {
+    var b = document.createElement("button");
+    b.className = "cat";
+    b.innerHTML = '<span class="mini">📄</span><span><div class="t"></div><div class="s">مشاهده / دانلود فایل PDF</div></span>';
+    b.querySelector(".t").textContent = c.name;
+    b.addEventListener("click", function () {
+      var url = new URL(c.file, location.href).href;
+      try { if (tg && tg.openLink) { tg.openLink(url); return; } } catch (e) {}
+      window.open(url, "_blank");
+    });
+    cats.appendChild(b);
+  });
 
-  // تب‌ها
-  function showTab(name) {
-    document.querySelectorAll(".view").forEach(function (v) { v.classList.toggle("active", v.id === name); });
-    document.querySelectorAll("nav button").forEach(function (b) { b.classList.toggle("active", b.dataset.tab === name); });
+  // ---- ناوبری با history تا دکمه برگشت گوشی درست کار کند ----
+  function render(view, detail) {
+    document.querySelectorAll(".view").forEach(function (v) { v.classList.toggle("active", v.id === view); });
+    document.body.classList.toggle("sub-page", view !== "home");
+    if (detail === null || detail === undefined) {
+      $("#detail").classList.remove("open");
+    } else {
+      var p = PRODUCTS[detail];
+      $("#d-img").src = p.img; $("#d-name").textContent = p.name; $("#d-text").textContent = p.text;
+      $("#detail").classList.add("open"); $("#detail").scrollTop = 0;
+    }
     window.scrollTo(0, 0);
   }
-  document.querySelectorAll("nav button").forEach(function (b) {
-    b.addEventListener("click", function () { showTab(b.dataset.tab); });
+  function go(view, detail) { history.pushState({ v:view, d:detail }, ""); render(view, detail); }
+  function openDetail(i) { go("products", i); }
+  window.addEventListener("popstate", function (e) {
+    var s = e.state || { v:"home", d:null }; render(s.v, s.d);
   });
+  history.replaceState({ v:"home", d:null }, "");
+
+  document.querySelectorAll(".tile").forEach(function (t) {
+    t.addEventListener("click", function () { go(t.dataset.go, null); });
+  });
+  $("#back").addEventListener("click", function () { go("home", null); });
+  $("#d-back").addEventListener("click", function () { history.back(); });
+  $("#d-contact").addEventListener("click", function () { go("contact", null); });
 </script>
 </body>
 </html>
