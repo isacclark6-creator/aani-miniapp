@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>آنی دک</title>
+<!-- SDK مینی‌اپ بله: طبق مستندات باید قبل از بقیه اسکریپت‌ها بیاید. بدون بله هم صفحه کار می‌کند. -->
+<script src="https://tapi.bale.ai/miniapp.js?3"></script>
+<style>
+  :root { --brand:#F7941D; --brand-dark:#d97c0a; --ink:#222; --muted:#6b6b6b; --card:#fff; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; padding:0; }
+  body {
+    font-family: Vazirmatn, Tahoma, "Segoe UI", system-ui, sans-serif;
+    color:var(--ink); background:#f3f3f3; min-height:100vh;
+    padding-bottom:76px;
+  }
+  /* پس‌زمینه واترمارک: عدد opacity را برای پررنگ/کم‌رنگ شدن عوض کن */
+  .wm { position:fixed; inset:0; z-index:-1; background:url(img/bg.jpg) center/cover no-repeat; opacity:.16; }
+
+  header {
+    position:sticky; top:0; z-index:5; padding:14px 16px 12px;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(8px);
+    border-bottom:3px solid var(--brand); display:flex; align-items:center; gap:10px;
+  }
+  .logo { font-size:26px; font-weight:800; color:var(--brand); line-height:1; }
+  .sub  { font-size:12px; color:var(--muted); }
+
+  main { padding:14px; }
+  .view { display:none; animation:fade .25s ease; }
+  .view.active { display:block; }
+  @keyframes fade { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+
+  h2 { font-size:17px; margin:4px 0 12px; display:flex; align-items:center; gap:8px; }
+  h2::before { content:""; width:5px; height:20px; border-radius:3px; background:var(--brand); }
+
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  .card {
+    background:var(--card); border-radius:16px; overflow:hidden; cursor:pointer;
+    box-shadow:0 2px 10px rgba(0,0,0,.08); border:0; padding:0; text-align:right;
+    font:inherit; color:inherit; transition:transform .15s;
+  }
+  .card:active { transform:scale(.97); }
+  .card img { display:block; width:100%; aspect-ratio:16/10; object-fit:cover; background:#ddd; }
+  .card .body { padding:10px 12px 14px; }
+  .card .name { font-weight:700; font-size:14px; }
+  .card .short { font-size:12px; color:var(--muted); margin-top:3px; }
+  .card .bar { width:34px; height:3px; border-radius:2px; background:var(--brand); margin-top:9px; }
+
+  .panel { background:var(--card); border-radius:16px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,.08); line-height:2; }
+  .panel img { width:100%; border-radius:12px; margin-bottom:12px; display:block; }
+  .row { display:flex; gap:8px; padding:8px 0; border-bottom:1px solid #eee; }
+  .row:last-child { border-bottom:0; }
+
+  /* صفحه جزئیات محصول */
+  #detail { position:fixed; inset:0; z-index:20; background:#f3f3f3; overflow:auto; display:none; }
+  #detail.open { display:block; animation:fade .25s ease; }
+  #detail .hero { width:100%; aspect-ratio:16/10; object-fit:cover; display:block; }
+  #detail .content { padding:16px; }
+  #detail h1 { font-size:20px; margin:0 0 8px; }
+  #detail p { line-height:2; color:#333; white-space:pre-line; }
+  .btn {
+    display:block; width:100%; margin-top:14px; padding:13px; border:0; border-radius:14px;
+    font:inherit; font-weight:700; font-size:15px; cursor:pointer;
+    background:var(--brand); color:#fff;
+  }
+  .btn.ghost { background:#fff; color:var(--brand-dark); border:2px solid var(--brand); }
+
+  nav {
+    position:fixed; bottom:0; left:0; right:0; z-index:10; display:flex;
+    background:rgba(255,255,255,.96); backdrop-filter:blur(8px);
+    border-top:1px solid #e4e4e4; padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav button {
+    flex:1; border:0; background:none; padding:10px 4px 9px; font:inherit; font-size:12px;
+    color:var(--muted); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px;
+  }
+  nav button .ic { font-size:20px; filter:grayscale(1); opacity:.6; }
+  nav button.active { color:var(--brand-dark); font-weight:700; }
+  nav button.active .ic { filter:none; opacity:1; }
+</style>
+</head>
+<body>
+<div class="wm"></div>
+
+<header>
+  <div>
+    <div class="logo">آنی دک</div>
+    <div class="sub">عرش‌گستر دامون</div>
+  </div>
+</header>
+
+<main>
+  <section id="products" class="view active">
+    <h2>محصولات</h2>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="about" class="view">
+    <h2>درباره ما</h2>
+    <div class="panel">
+      <img src="img/about.jpg" alt="">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+      incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+      exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    </div>
+  </section>
+
+  <section id="contact" class="view">
+    <h2>تماس با ما</h2>
+    <div class="panel">
+      <div class="row">📞 <span>تلفن: ----</span></div>
+      <div class="row">📍 <span>آدرس: ----</span></div>
+      <div class="row">🕘 <span>ساعت کاری: ----</span></div>
+      <div class="row">🌐 <span>وب‌سایت: ----</span></div>
+    </div>
+  </section>
+</main>
+
+<div id="detail">
+  <img class="hero" id="d-img" alt="">
+  <div class="content">
+    <h1 id="d-name"></h1>
+    <p id="d-text"></p>
+    <button class="btn" id="d-contact">☎️ تماس با ما</button>
+    <button class="btn ghost" id="d-back">🔙 بازگشت به محصولات</button>
+  </div>
+</div>
+
+<nav>
+  <button data-tab="products" class="active"><span class="ic">🏗</span>محصولات</button>
+  <button data-tab="about"><span class="ic">🏢</span>درباره ما</button>
+  <button data-tab="contact"><span class="ic">☎️</span>تماس</button>
+</nav>
+
+<script>
+  // اتصال به بله (اگر داخل بله باز نشده باشد، بی‌صدا نادیده گرفته می‌شود)
+  var tg = (window.Bale && window.Bale.WebApp) || null;
+  try { if (tg && tg.ready) tg.ready(); } catch (e) {}
+  try { if (tg && tg.expand) tg.expand(); } catch (e) {}
+
+  // محصولات آزمایشی؛ بعداً با محتوای واقعی عوض می‌شود
+  var PRODUCTS = [
+    { name:"محصول نمونه ۱", short:"توضیح کوتاه آزمایشی", img:"img/p1.jpg", thumb:"img/p1_thumb.jpg",
+      text:"توضیح آزمایشی محصول ۱.\nمشخصات: ----" },
+    { name:"محصول نمونه ۲", short:"توضیح کوتاه آزمایشی", img:"img/p2.jpg", thumb:"img/p2_thumb.jpg",
+      text:"توضیح آزمایشی محصول ۲.\nمشخصات: ----" },
+    { name:"محصول نمونه ۳", short:"توضیح کوتاه آزمایشی", img:"img/p3.jpg", thumb:"img/p3_thumb.jpg",
+      text:"توضیح آزمایشی محصول ۳.\nمشخصات: ----" },
+    { name:"محصول نمونه ۴", short:"توضیح کوتاه آزمایشی", img:"img/p4.jpg", thumb:"img/p4_thumb.jpg",
+      text:"توضیح آزمایشی محصول ۴.\nمشخصات: ----" }
+  ];
+
+  var $ = function (s) { return document.querySelector(s); };
+
+  // ساخت کارت‌ها (شبکه ۲ستونه)
+  var grid = $("#grid");
+  PRODUCTS.forEach(function (p, i) {
+    var b = document.createElement("button");
+    b.className = "card";
+    b.innerHTML = '<img loading="lazy" alt="" src="' + p.thumb + '">' +
+      '<div class="body"><div class="name"></div><div class="short"></div><div class="bar"></div></div>';
+    b.querySelector(".name").textContent = p.name;
+    b.querySelector(".short").textContent = p.short;
+    b.addEventListener("click", function () { openDetail(i); });
+    grid.appendChild(b);
+  });
+
+  // صفحه جزئیات
+  function openDetail(i) {
+    var p = PRODUCTS[i];
+    $("#d-img").src = p.img;
+    $("#d-name").textContent = p.name;
+    $("#d-text").textContent = p.text;
+    $("#detail").classList.add("open");
+    $("#detail").scrollTop = 0;
+    history.pushState({ d: 1 }, "");
+  }
+  function closeDetail() { $("#detail").classList.remove("open"); }
+  $("#d-back").addEventListener("click", function () { history.back(); });
+  $("#d-contact").addEventListener("click", function () { closeDetail(); showTab("contact"); });
+  window.addEventListener("popstate", closeDetail);   // دکمه برگشت گوشی
+
+  // تب‌ها
+  function showTab(name) {
+    document.querySelectorAll(".view").forEach(function (v) { v.classList.toggle("active", v.id === name); });
+    document.querySelectorAll("nav button").forEach(function (b) { b.classList.toggle("active", b.dataset.tab === name); });
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll("nav button").forEach(function (b) {
+    b.addEventListener("click", function () { showTab(b.dataset.tab); });
+  });
+</script>
+</body>
+</html>
